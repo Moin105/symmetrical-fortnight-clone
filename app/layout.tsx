@@ -1,0 +1,31 @@
+import React from 'react'
+import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
+import './globals.css'
+import PageTransition from '../components/PageTransition'
+
+const inter = Inter({ subsets: ['latin'] })
+
+export const metadata: Metadata = {
+  title: 'ByFoods - Food Delivery Platform',
+  description: 'Order delicious food from the best restaurants in your area',
+  keywords: 'food delivery, restaurants, online ordering, food, delivery',
+}
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="en">
+      <body className={inter.className}>
+        <PageTransition>
+          <div className="min-h-screen">
+            {children}
+          </div>
+        </PageTransition>
+      </body>
+    </html>
+  )
+} 
