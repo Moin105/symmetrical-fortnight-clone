@@ -1,0 +1,448 @@
+'use client'
+
+import React, { useState } from 'react'
+import { motion } from 'framer-motion'
+import { Star, MapPin, Clock, Calendar, Share2, Heart, Users, Ticket, Camera, Music } from 'lucide-react'
+import Header from '../../../components/Header'
+import Footer from '../../../components/Footer'
+
+const eventDetails = {
+  id: 1,
+  name: 'Golden Hour Cocktail Masterclass',
+  type: 'Workshop',
+  category: 'Education',
+  rating: 4.8,
+  reviews: 89,
+  date: '2024-02-15',
+  time: '7:00 PM - 9:00 PM',
+  duration: '2 hours',
+  location: 'The Golden Hour Bar',
+  address: '123 Golden Street, Downtown District',
+  phone: '+1 (555) 123-4567',
+  price: '$75',
+  capacity: '20 people',
+  availableSpots: 8,
+  organizer: 'The Golden Hour Bar',
+  organizerEmail: 'events@goldenhour.com',
+  images: [
+    'https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=800&h=600&fit=crop',
+    'https://images.unsplash.com/photo-1572116469696-31de0f17cc34?w=800&h=600&fit=crop',
+    'https://images.unsplash.com/photo-1566737236500-c8ac43014a67?w=800&h=600&fit=crop',
+    'https://images.unsplash.com/photo-1571266028243-e68f96d85b9a?w=800&h=600&fit=crop'
+  ],
+  description: 'Join us for an exclusive cocktail masterclass led by our award-winning mixologists. Learn the art of crafting premium cocktails using premium spirits, fresh ingredients, and professional techniques. This hands-on experience includes tasting, instruction, and take-home recipes.',
+  highlights: [
+    'Learn from award-winning mixologists',
+    'Hands-on cocktail making experience',
+    'Premium spirits and ingredients included',
+    'Take-home recipe cards',
+    'Small group setting (max 20 people)',
+    'Professional bar tools provided'
+  ],
+  agenda: [
+    { time: '7:00 PM', activity: 'Welcome & Introduction' },
+    { time: '7:15 PM', activity: 'Classic Cocktail Techniques' },
+    { time: '7:45 PM', activity: 'Hands-on Mixing Session' },
+    { time: '8:15 PM', activity: 'Modern Cocktail Innovation' },
+    { time: '8:45 PM', activity: 'Q&A and Tasting' },
+    { time: '9:00 PM', activity: 'Event Conclusion' }
+  ],
+  requirements: [
+    'Must be 21+ years old',
+    'Valid ID required',
+    'Comfortable clothing recommended',
+    'No prior experience necessary'
+  ],
+  includes: [
+    'All ingredients and spirits',
+    'Professional bar tools',
+    'Recipe cards',
+    'Light appetizers',
+    'Certificate of completion'
+  ]
+}
+
+const reviews = [
+  {
+    id: 1,
+    name: 'Jennifer Martinez',
+    rating: 5,
+    date: '2024-01-15',
+    comment: 'Amazing experience! The instructors were knowledgeable and patient. I learned so much about cocktail making and had a great time.',
+    avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face'
+  },
+  {
+    id: 2,
+    name: 'David Chen',
+    rating: 5,
+    date: '2024-01-12',
+    comment: 'Perfect for date night! The atmosphere was intimate and the cocktails we made were delicious. Highly recommend!',
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face'
+  },
+  {
+    id: 3,
+    name: 'Lisa Thompson',
+    rating: 4,
+    date: '2024-01-10',
+    comment: 'Great way to learn new skills while having fun. The small group size made it very interactive and personal.',
+    avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face'
+  }
+]
+
+export default function EventDetailPage({ params }: { params: { id: string } }) {
+  const [selectedImage, setSelectedImage] = useState(0)
+  const [activeTab, setActiveTab] = useState('overview')
+  const [isFavorite, setIsFavorite] = useState(false)
+  const [ticketQuantity, setTicketQuantity] = useState(1)
+
+  const tabs = [
+    { id: 'overview', label: 'Overview' },
+    { id: 'agenda', label: 'Agenda' },
+    { id: 'reviews', label: 'Reviews' },
+    { id: 'photos', label: 'Photos' }
+  ]
+
+  const totalPrice = ticketQuantity * parseInt(eventDetails.price.replace('$', ''))
+
+  return (
+    <div className="min-h-screen bg-black text-white">
+      <Header />
+      
+      <main>
+        {/* Hero Section */}
+        <section className="relative h-96 overflow-hidden">
+          <div 
+            className="w-full h-full bg-cover bg-center"
+            style={{ backgroundImage: `url(${eventDetails.images[selectedImage]})` }}
+          >
+            <div className="absolute inset-0 bg-black/50"></div>
+          </div>
+          
+          <div className="absolute inset-0 flex items-end">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 w-full">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="flex items-center space-x-2 mb-2">
+                    <span className="px-3 py-1 bg-primary-500 text-black text-sm rounded-full font-semibold">
+                      {eventDetails.category}
+                    </span>
+                    <span className="px-3 py-1 bg-white/20 text-white text-sm rounded-full">
+                      {eventDetails.type}
+                    </span>
+                  </div>
+                  <h1 className="text-4xl md:text-5xl font-bold mb-2">{eventDetails.name}</h1>
+                  <p className="text-xl text-gray-300">{eventDetails.location}</p>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <button
+                    onClick={() => setIsFavorite(!isFavorite)}
+                    className={`p-3 rounded-full transition-colors ${
+                      isFavorite ? 'bg-red-500 text-white' : 'bg-white/20 text-white hover:bg-white/30'
+                    }`}
+                  >
+                    <Heart className={`w-6 h-6 ${isFavorite ? 'fill-current' : ''}`} />
+                  </button>
+                  <button className="p-3 bg-white/20 text-white rounded-full hover:bg-white/30 transition-colors">
+                    <Share2 className="w-6 h-6" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Image Gallery */}
+        <section className="py-8 bg-gray-900">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {eventDetails.images.map((image, index) => (
+                <button
+                  key={index}
+                  onClick={() => setSelectedImage(index)}
+                  className={`relative h-24 rounded-lg overflow-hidden transition-all ${
+                    selectedImage === index ? 'ring-2 ring-primary-500' : 'hover:opacity-80'
+                  }`}
+                >
+                  <div 
+                    className="w-full h-full bg-cover bg-center"
+                    style={{ backgroundImage: `url(${image})` }}
+                  />
+                </button>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Main Content */}
+        <section className="py-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Left Column - Main Info */}
+              <div className="lg:col-span-2">
+                {/* Tabs */}
+                <div className="mb-8">
+                  <div className="flex space-x-1 bg-gray-900 p-1 rounded-lg">
+                    {tabs.map((tab) => (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                          activeTab === tab.id
+                            ? 'bg-primary-500 text-black'
+                            : 'text-gray-400 hover:text-white'
+                        }`}
+                      >
+                        {tab.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Tab Content */}
+                {activeTab === 'overview' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="space-y-8"
+                  >
+                    <div>
+                      <h2 className="text-2xl font-bold mb-4">About This Event</h2>
+                      <p className="text-gray-300 leading-relaxed mb-6">{eventDetails.description}</p>
+                    </div>
+
+                    <div>
+                      <h3 className="text-xl font-semibold mb-4">Event Highlights</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {eventDetails.highlights.map((highlight, index) => (
+                          <div key={index} className="flex items-center space-x-3">
+                            <div className="w-2 h-2 bg-primary-500 rounded-full"></div>
+                            <span className="text-gray-300">{highlight}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <h3 className="text-xl font-semibold mb-4">What's Included</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {eventDetails.includes.map((item, index) => (
+                          <div key={index} className="flex items-center space-x-3">
+                            <div className="w-2 h-2 bg-primary-500 rounded-full"></div>
+                            <span className="text-gray-300">{item}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <h3 className="text-xl font-semibold mb-4">Requirements</h3>
+                      <div className="space-y-2">
+                        {eventDetails.requirements.map((requirement, index) => (
+                          <div key={index} className="flex items-center space-x-3">
+                            <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                            <span className="text-gray-300">{requirement}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                {activeTab === 'agenda' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="space-y-6"
+                  >
+                    <h2 className="text-2xl font-bold mb-6">Event Agenda</h2>
+                    <div className="space-y-4">
+                      {eventDetails.agenda.map((item, index) => (
+                        <div key={index} className="flex items-center space-x-4 bg-gray-900 p-4 rounded-lg">
+                          <div className="flex-shrink-0 w-20 text-primary-500 font-semibold">
+                            {item.time}
+                          </div>
+                          <div className="flex-1 text-gray-300">
+                            {item.activity}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+
+                {activeTab === 'reviews' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="space-y-6"
+                  >
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-2xl font-bold">Reviews</h2>
+                      <div className="flex items-center space-x-2">
+                        <Star className="w-5 h-5 text-yellow-500 fill-current" />
+                        <span className="text-lg font-semibold">{eventDetails.rating}</span>
+                        <span className="text-gray-400">({eventDetails.reviews} reviews)</span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-6">
+                      {reviews.map((review) => (
+                        <div key={review.id} className="bg-gray-900 p-6 rounded-lg">
+                          <div className="flex items-start space-x-4">
+                            <img
+                              src={review.avatar}
+                              alt={review.name}
+                              className="w-12 h-12 rounded-full"
+                            />
+                            <div className="flex-1">
+                              <div className="flex items-center justify-between mb-2">
+                                <h3 className="font-semibold">{review.name}</h3>
+                                <div className="flex items-center space-x-1">
+                                  {[...Array(5)].map((_, i) => (
+                                    <Star
+                                      key={i}
+                                      className={`w-4 h-4 ${
+                                        i < review.rating ? 'text-yellow-500 fill-current' : 'text-gray-600'
+                                      }`}
+                                    />
+                                  ))}
+                                </div>
+                              </div>
+                              <p className="text-gray-300 mb-2">{review.comment}</p>
+                              <p className="text-gray-500 text-sm">{review.date}</p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+
+                {activeTab === 'photos' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="grid grid-cols-1 md:grid-cols-2 gap-4"
+                  >
+                    {eventDetails.images.map((image, index) => (
+                      <div key={index} className="relative h-64 rounded-lg overflow-hidden">
+                        <div 
+                          className="w-full h-full bg-cover bg-center hover:scale-105 transition-transform duration-300"
+                          style={{ backgroundImage: `url(${image})` }}
+                        />
+                      </div>
+                    ))}
+                  </motion.div>
+                )}
+              </div>
+
+              {/* Right Column - Booking Sidebar */}
+              <div className="space-y-6">
+                {/* Booking Card */}
+                <div className="bg-gray-900 p-6 rounded-lg sticky top-24">
+                  <div className="text-center mb-6">
+                    <div className="text-3xl font-bold text-primary-500 mb-2">{eventDetails.price}</div>
+                    <div className="text-gray-400">per person</div>
+                  </div>
+
+                  <div className="space-y-4 mb-6">
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-400">Available Spots:</span>
+                      <span className="text-white font-semibold">{eventDetails.availableSpots} of {eventDetails.capacity}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-400">Date:</span>
+                      <span className="text-white font-semibold">
+                        {new Date(eventDetails.date).toLocaleDateString('en-US', { 
+                          weekday: 'long', 
+                          month: 'long', 
+                          day: 'numeric' 
+                        })}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-400">Time:</span>
+                      <span className="text-white font-semibold">{eventDetails.time}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-400">Duration:</span>
+                      <span className="text-white font-semibold">{eventDetails.duration}</span>
+                    </div>
+                  </div>
+
+                  <div className="mb-6">
+                    <label className="block text-gray-400 text-sm mb-2">Number of Tickets</label>
+                    <div className="flex items-center space-x-3">
+                      <button
+                        onClick={() => setTicketQuantity(Math.max(1, ticketQuantity - 1))}
+                        className="w-8 h-8 bg-gray-800 text-white rounded-full flex items-center justify-center hover:bg-gray-700"
+                      >
+                        -
+                      </button>
+                      <span className="text-white font-semibold w-8 text-center">{ticketQuantity}</span>
+                      <button
+                        onClick={() => setTicketQuantity(Math.min(eventDetails.availableSpots, ticketQuantity + 1))}
+                        className="w-8 h-8 bg-gray-800 text-white rounded-full flex items-center justify-center hover:bg-gray-700"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="border-t border-gray-700 pt-4 mb-6">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-400">Total:</span>
+                      <span className="text-2xl font-bold text-primary-500">${totalPrice}</span>
+                    </div>
+                  </div>
+
+                  <button className="w-full bg-primary-500 hover:bg-primary-600 text-black font-semibold py-3 px-4 rounded-lg transition-colors mb-4">
+                    Book Now
+                  </button>
+
+                  <button className="w-full bg-transparent border border-primary-500 text-primary-500 hover:bg-primary-500 hover:text-black font-semibold py-2 px-4 rounded-lg transition-colors">
+                    Add to Calendar
+                  </button>
+                </div>
+
+                {/* Event Info */}
+                <div className="bg-gray-900 p-6 rounded-lg">
+                  <h3 className="text-lg font-semibold mb-4">Event Information</h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-3">
+                      <MapPin className="w-5 h-5 text-gray-400" />
+                      <span className="text-gray-300">{eventDetails.address}</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      {/* <Phone className="w-5 h-5 text-gray-400" /> */}
+                      <span className="text-gray-300">{eventDetails.phone}</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <Users className="w-5 h-5 text-gray-400" />
+                      <span className="text-gray-300">{eventDetails.capacity} max capacity</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <Calendar className="w-5 h-5 text-gray-400" />
+                      <span className="text-gray-300">{eventDetails.duration}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Organizer Info */}
+                <div className="bg-gray-900 p-6 rounded-lg">
+                  <h3 className="text-lg font-semibold mb-4">Organizer</h3>
+                  <div className="space-y-2">
+                    <p className="text-white font-medium">{eventDetails.organizer}</p>
+                    <p className="text-gray-400 text-sm">{eventDetails.organizerEmail}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <Footer />
+    </div>
+  )
+}

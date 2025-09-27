@@ -4,17 +4,17 @@ import React from 'react'
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-white">
+    <footer className="bg-black border-t border-gray-800 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Company Info */}
           <div className="lg:col-span-1">
-            <h3 className="text-2xl font-bold text-gradient mb-4">
+            <h3 className="text-2xl font-bold text-primary-500 mb-4">
               ByFoods
             </h3>
             <p className="text-gray-400 mb-6 leading-relaxed">
-              Bringing the best restaurants and cuisines to your doorstep. 
-              Fast delivery, great prices, and amazing taste.
+              Your premier destination for premium bars, distilleries, and exclusive events. 
+              Experience the finest in nightlife and entertainment.
             </p>
             <div className="flex space-x-4">
               <a href="#" className="text-gray-400 hover:text-white transition-colors">
@@ -48,23 +48,23 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href="/restaurants" className="text-gray-400 hover:text-white transition-colors">
-                  Restaurants
+                <a href="/bars" className="text-gray-400 hover:text-white transition-colors">
+                  Bars
                 </a>
               </li>
               <li>
-                <a href="/menu" className="text-gray-400 hover:text-white transition-colors">
-                  Menu
+                <a href="/distilleries" className="text-gray-400 hover:text-white transition-colors">
+                  Distilleries
                 </a>
               </li>
               <li>
-                <a href="/about" className="text-gray-400 hover:text-white transition-colors">
-                  About Us
+                <a href="/events" className="text-gray-400 hover:text-white transition-colors">
+                  Events
                 </a>
               </li>
               <li>
-                <a href="/contact" className="text-gray-400 hover:text-white transition-colors">
-                  Contact
+                <a href="/blog" className="text-gray-400 hover:text-white transition-colors">
+                  Blog
                 </a>
               </li>
             </ul>

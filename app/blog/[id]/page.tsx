@@ -4,83 +4,77 @@ import Footer from '../../../components/Footer'
 
 const blogPost = {
   id: 1,
-  title: 'Top 10 Must-Try Pizza Places in New York',
+  title: 'The Art of Craft Cocktails: A Complete Guide',
   content: `
-    <p>New York City is renowned for its pizza culture, with countless pizzerias serving up delicious pies from classic Neapolitan to innovative gourmet creations. After extensive research and taste testing, we've compiled a list of the top 10 pizza places that every food lover must try in the Big Apple.</p>
+    <p>Craft cocktails have revolutionized the nightlife scene, bringing artistry, creativity, and premium ingredients to the forefront of mixology. From speakeasies to rooftop bars, the craft cocktail movement has elevated the drinking experience to new heights. In this comprehensive guide, we'll explore the techniques, ingredients, and venues that define this exciting world.</p>
     
-    <h2>1. Lombardi's (1905)</h2>
-    <p>As America's first pizzeria, Lombardi's holds a special place in pizza history. Located in Little Italy, this iconic establishment serves up classic coal-fired pizzas with a perfectly charred crust and fresh mozzarella. The Margherita pizza here is a must-try, featuring San Marzano tomatoes and fresh basil.</p>
+    <h2>1. The Foundation: Quality Spirits</h2>
+    <p>Every great craft cocktail starts with premium spirits. Whether it's a small-batch bourbon, artisanal gin, or aged rum, the base spirit sets the tone for the entire drink. Top mixologists carefully select spirits that offer complexity, character, and balance.</p>
     
-    <h2>2. Grimaldi's</h2>
-    <p>Nestled under the Brooklyn Bridge, Grimaldi's is famous for its coal-fired brick oven pizzas. The thin, crispy crust and generous toppings make every bite memorable. Don't miss their signature white pizza with ricotta, mozzarella, and garlic.</p>
+    <h2>2. Fresh Ingredients Make the Difference</h2>
+    <p>Gone are the days of artificial syrups and pre-made mixes. Modern craft cocktails rely on fresh citrus, house-made syrups, and seasonal ingredients. From muddled herbs to freshly squeezed juices, every component is carefully prepared to enhance the drinking experience.</p>
     
-    <h2>3. Di Fara Pizza</h2>
-    <p>This family-owned pizzeria in Midwood, Brooklyn, has been serving authentic Neapolitan-style pizza since 1965. Owner Dom DeMarco personally makes each pizza, ensuring perfection. The wait is worth it for their legendary square slices.</p>
+    <h2>3. The Science of Mixing</h2>
+    <p>Craft cocktails are built on the principles of balance, dilution, and temperature. Understanding how different ingredients interact, the importance of proper shaking or stirring, and the role of ice in creating the perfect drink is essential for any aspiring mixologist.</p>
     
-    <h2>4. Joe's Pizza</h2>
-    <p>A Greenwich Village institution since 1975, Joe's Pizza is famous for its classic New York slices. The thin, foldable crust and perfect cheese-to-sauce ratio make it a favorite among locals and tourists alike.</p>
+    <h2>4. Presentation and Garnish</h2>
+    <p>Visual appeal is crucial in craft cocktails. From elegant glassware to creative garnishes, presentation elevates the entire experience. Edible flowers, citrus twists, and even smoke effects can transform a simple drink into a work of art.</p>
     
-    <h2>5. Roberta's</h2>
-    <p>Located in Bushwick, Roberta's has revolutionized the pizza scene with its wood-fired oven and creative toppings. Their "Bee Sting" pizza with soppressata, mozzarella, and hot honey is a game-changer.</p>
+    <h2>5. Signature Techniques</h2>
+    <p>Advanced techniques like fat-washing, barrel-aging, and molecular mixology have pushed the boundaries of what's possible in cocktail creation. These innovative methods allow bartenders to create unique flavors and textures that were previously unimaginable.</p>
     
-    <h2>6. Lucali</h2>
-    <p>This intimate pizzeria in Carroll Gardens serves up some of the best thin-crust pizzas in the city. The BYOB policy and candlelit atmosphere make it perfect for date night. Be prepared to wait, but it's absolutely worth it.</p>
+    <h2>6. The Role of the Bartender</h2>
+    <p>Modern bartenders are more than drink makers – they're storytellers, entertainers, and craftspeople. The best craft cocktail bars feature bartenders who can guide guests through flavor profiles, suggest perfect pairings, and create personalized experiences.</p>
     
-    <h2>7. Motorino</h2>
-    <p>With locations in Williamsburg and the East Village, Motorino specializes in Neapolitan-style pizzas with a perfectly charred crust. Their Brussels sprout pizza with pancetta and mozzarella is a unique and delicious option.</p>
-    
-    <h2>8. Artichoke Basille's Pizza</h2>
-    <p>Known for their signature artichoke pizza, this chain has become a late-night favorite. The creamy artichoke sauce and thick, Sicilian-style crust create a unique pizza experience that's unlike anything else in the city.</p>
-    
-    <h2>9. L&B Spumoni Gardens</h2>
-    <p>This Bensonhurst institution is famous for its Sicilian square slices. The thick, fluffy crust and sweet sauce make it a must-try for anyone visiting Brooklyn. Don't forget to order their famous spumoni for dessert.</p>
-    
-    <h2>10. Paulie Gee's</h2>
-    <p>Located in Greenpoint, Paulie Gee's offers creative wood-fired pizzas with unique toppings. Their "Hellboy" pizza with soppressata, mozzarella, and hot honey is a spicy delight that keeps customers coming back.</p>
-    
-    <h2>Tips for the Best Pizza Experience</h2>
+    <h2>7. Popular Craft Cocktail Categories</h2>
     <ul>
-      <li>Call ahead for reservations at popular spots like Lucali and Roberta's</li>
-      <li>Visit during off-peak hours to avoid long waits</li>
-      <li>Try different styles: Neapolitan, New York, and Sicilian</li>
-      <li>Don't be afraid to ask for recommendations from the staff</li>
-      <li>Consider the atmosphere - some places are perfect for dates, others for quick slices</li>
+      <li><strong>Classic Revivals:</strong> Updated versions of timeless drinks like the Old Fashioned and Manhattan</li>
+      <li><strong>Seasonal Creations:</strong> Cocktails that highlight seasonal ingredients and flavors</li>
+      <li><strong>Smoked Cocktails:</strong> Drinks enhanced with wood smoke for depth and complexity</li>
+      <li><strong>Tiki Revival:</strong> Modern interpretations of tropical classics with premium ingredients</li>
+      <li><strong>Low-ABV Options:</strong> Sophisticated drinks with lower alcohol content for extended enjoyment</li>
     </ul>
     
-    <p>Whether you're a pizza purist or an adventurous eater, New York City has something for everyone. These 10 pizzerias represent the best of what the city has to offer, from classic institutions to innovative newcomers. Happy eating!</p>
+    <h2>8. Building Your Home Bar</h2>
+    <p>Creating craft cocktails at home requires quality tools and ingredients. Essential equipment includes a cocktail shaker, jigger, muddler, and strainer. Start with a few premium spirits and build your collection gradually, focusing on versatility and quality.</p>
+    
+    <h2>9. The Future of Craft Cocktails</h2>
+    <p>The craft cocktail movement continues to evolve, with trends like zero-waste cocktails, sustainable practices, and innovative flavor combinations shaping the future. Technology is also playing a role, with apps and tools helping both professionals and enthusiasts perfect their craft.</p>
+    
+    <p>Whether you're a seasoned cocktail enthusiast or just beginning your journey into the world of craft drinks, there's always something new to discover. The art of craft cocktails is about more than just mixing ingredients – it's about creating experiences, telling stories, and celebrating the rich tradition of mixology while pushing its boundaries forward.</p>
   `,
-  excerpt: 'Discover the best pizza joints in the Big Apple, from classic Neapolitan to innovative gourmet creations.',
+  excerpt: 'Discover the secrets behind creating perfect craft cocktails from master mixologists and premium bars.',
   author: {
     name: 'Sarah Johnson',
-    bio: 'Food writer and pizza enthusiast with 10+ years of experience covering New York\'s culinary scene.',
+    bio: 'Cocktail expert and mixology enthusiast with 10+ years of experience in the nightlife industry.',
     image: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=300&h=300&fit=crop',
     twitter: '@sarahjohnson',
     instagram: '@sarahjohnson_food'
   },
   date: '2024-01-15',
   readTime: '5 min read',
-  category: 'Food Guide',
-  image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&h=400&fit=crop',
-  tags: ['Pizza', 'New York', 'Restaurants', 'Food Guide', 'Italian'],
+  category: 'Cocktails',
+  image: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=800&h=400&fit=crop',
+  tags: ['Cocktails', 'Mixology', 'Bars', 'Spirits', 'Nightlife'],
   relatedPosts: [
     {
       id: 2,
-      title: 'Weekend Brunch Spots You Need to Try',
-      excerpt: 'From classic eggs benedict to innovative fusion dishes, here are the best brunch destinations.',
+      title: 'Whiskey Tasting Guide: From Beginner to Expert',
+      excerpt: 'Learn how to properly taste and appreciate different types of whiskey from around the world.',
       image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=300&h=200&fit=crop',
       date: '2024-01-08'
     },
     {
       id: 3,
-      title: 'The Rise of Plant-Based Dining: A Complete Guide',
-      excerpt: 'Explore the growing trend of plant-based restaurants and how they\'re changing the food industry.',
+      title: 'Best Rooftop Bars in the City: A Nightlife Guide',
+      excerpt: 'Explore the most stunning rooftop bars with breathtaking city views and premium cocktails.',
       image: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=300&h=200&fit=crop',
       date: '2024-01-10'
     },
     {
       id: 4,
-      title: 'International Cuisine: Exploring Global Flavors',
-      excerpt: 'Take a culinary journey around the world with these authentic international restaurants.',
+      title: 'Exclusive Events: How to Access Premium Experiences',
+      excerpt: 'From private tastings to VIP events, discover how to access the most exclusive nightlife experiences.',
       image: 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=300&h=200&fit=crop',
       date: '2024-01-03'
     }
@@ -89,9 +83,9 @@ const blogPost = {
 
 export default function BlogDetailPage({ params }: { params: { id: string } }) {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-black">
       <Header />
-      <main className="bg-gray-50">
+      <main className="bg-black">
         {/* Article Header */}
         <section className="bg-white border-b">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

@@ -5,46 +5,46 @@ import Footer from '../../components/Footer'
 const blogPosts = [
   {
     id: 1,
-    title: 'Top 10 Must-Try Pizza Places in New York',
-    excerpt: 'Discover the best pizza joints in the Big Apple, from classic Neapolitan to innovative gourmet creations.',
+    title: 'The Art of Craft Cocktails: A Complete Guide',
+    excerpt: 'Discover the secrets behind creating perfect craft cocktails from master mixologists and premium bars.',
     author: 'Sarah Johnson',
     date: '2024-01-15',
     readTime: '5 min read',
-    category: 'Food Guide',
-    image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&h=400&fit=crop',
+    category: 'Cocktails',
+    image: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=600&h=400&fit=crop',
     featured: true
   },
   {
     id: 2,
-    title: 'Healthy Eating: Quick and Nutritious Meal Ideas',
-    excerpt: 'Learn how to prepare delicious, healthy meals in under 30 minutes with these simple recipes.',
+    title: 'Whiskey Tasting Guide: From Beginner to Expert',
+    excerpt: 'Learn how to properly taste and appreciate different types of whiskey from around the world.',
     author: 'Emily Rodriguez',
     date: '2024-01-12',
     readTime: '8 min read',
-    category: 'Health & Wellness',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600&h=400&fit=crop',
+    category: 'Spirits',
+    image: 'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=600&h=400&fit=crop',
     featured: false
   },
   {
     id: 3,
-    title: 'The Rise of Plant-Based Dining: A Complete Guide',
-    excerpt: 'Explore the growing trend of plant-based restaurants and how they\'re changing the food industry.',
+    title: 'Best Rooftop Bars in the City: A Nightlife Guide',
+    excerpt: 'Explore the most stunning rooftop bars with breathtaking city views and premium cocktails.',
     author: 'Michael Chen',
     date: '2024-01-10',
     readTime: '6 min read',
-    category: 'Trends',
-    image: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=600&h=400&fit=crop',
+    category: 'Bars',
+    image: 'https://images.unsplash.com/photo-1566737236500-c8ac43014a67?w=600&h=400&fit=crop',
     featured: false
   },
   {
     id: 4,
-    title: 'Weekend Brunch Spots You Need to Try',
-    excerpt: 'From classic eggs benedict to innovative fusion dishes, here are the best brunch destinations.',
+    title: 'Exclusive Events: How to Access Premium Experiences',
+    excerpt: 'From private tastings to VIP events, discover how to access the most exclusive nightlife experiences.',
     author: 'David Kim',
     date: '2024-01-08',
     readTime: '4 min read',
-    category: 'Food Guide',
-    image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=600&h=400&fit=crop',
+    category: 'Events',
+    image: 'https://images.unsplash.com/photo-1572116469696-31de0f17cc34?w=600&h=400&fit=crop',
     featured: false
   },
   {
@@ -71,13 +71,13 @@ const blogPosts = [
   }
 ]
 
-const categories = ['All', 'Food Guide', 'Health & Wellness', 'Trends', 'Company News', 'Recipes']
+const categories = ['All', 'Cocktails', 'Spirits', 'Bars', 'Events', 'Distilleries', 'Nightlife']
 
 export default function BlogPage() {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-black">
       <Header />
-      <main className="bg-gray-50">
+      <main className="bg-black">
         {/* Hero Section */}
         <section className="bg-gradient-to-r from-primary-500 to-primary-600 text-white py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -85,15 +85,15 @@ export default function BlogPage() {
               <h1 className="text-4xl md:text-5xl font-bold mb-4">
                 ByFoods Blog
               </h1>
-              <p className="text-xl text-primary-100 max-w-2xl mx-auto">
-                Discover food trends, restaurant guides, healthy eating tips, and stories from our community
+              <p className="text-xl text-black/80 max-w-2xl mx-auto">
+                Discover the latest in nightlife, spirits, events, and entertainment culture
               </p>
             </div>
           </div>
         </section>
 
         {/* Search and Filters */}
-        <section className="py-8 bg-white border-b">
+        <section className="py-8 bg-gray-900 border-b border-gray-800">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
               {/* Search */}
@@ -101,7 +101,7 @@ export default function BlogPage() {
                 <input
                   type="text"
                   placeholder="Search articles..."
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 />
                 <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -115,8 +115,8 @@ export default function BlogPage() {
                     key={category}
                     className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                       category === 'All' 
-                        ? 'bg-primary-500 text-white' 
-                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                        ? 'bg-primary-500 text-black' 
+                        : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                     }`}
                   >
                     {category}

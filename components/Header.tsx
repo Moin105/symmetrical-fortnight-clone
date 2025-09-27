@@ -9,39 +9,33 @@ export default function Header() {
   const [searchQuery, setSearchQuery] = useState('')
 
   return (
-    <header className="bg-white shadow-sm sticky top-0 z-50">
+    <header className="bg-black border-b border-gray-800 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" className="text-2xl font-bold text-gradient">
+            <Link href="/" className="text-2xl font-bold text-primary-500">
               ByFoods
             </Link>
           </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <Link href="/" className="text-gray-700 hover:text-primary-500 transition-colors">
+            <Link href="/" className="text-white hover:text-primary-500 transition-colors">
               Home
             </Link>
-            <Link href="/order" className="text-gray-700 hover:text-primary-500 transition-colors">
-              Order Now
+            <Link href="/bars" className="text-white hover:text-primary-500 transition-colors">
+              Bars
             </Link>
-            <Link href="/restaurants" className="text-gray-700 hover:text-primary-500 transition-colors">
-              Restaurants
+            <Link href="/distilleries" className="text-white hover:text-primary-500 transition-colors">
+              Distilleries
             </Link>
-            {/* <Link href="/product/1" className="text-gray-700 hover:text-primary-500 transition-colors">
-              Menu Items
-            </Link> */}
-            <Link href="/collections" className="text-gray-700 hover:text-primary-500 transition-colors">
-              Collections
+            <Link href="/events" className="text-white hover:text-primary-500 transition-colors">
+              Events
             </Link>
-            <Link href="/blog" className="text-gray-700 hover:text-primary-500 transition-colors">
+            <Link href="/blog" className="text-white hover:text-primary-500 transition-colors">
               Blog
             </Link>
-            {/* <Link href="/about" className="text-gray-700 hover:text-primary-500 transition-colors">
-              About
-            </Link> */}
           </nav>
 
           {/* Search Bar */}
@@ -50,10 +44,10 @@ export default function Header() {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
               <input
                 type="text"
-                placeholder="Search for restaurants, cuisines..."
+                placeholder="Search bars, distilleries, events..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               />
             </div>
           </div>
@@ -61,28 +55,20 @@ export default function Header() {
           {/* Right side actions */}
           <div className="flex items-center space-x-4">
             {/* Location */}
-            <div className="hidden sm:flex items-center text-gray-600">
+            <div className="hidden sm:flex items-center text-gray-400">
               <MapPin className="h-5 w-5 mr-1" />
               <span className="text-sm">New York</span>
             </div>
 
-            {/* Cart */}
-            <Link href="/cart" className="relative p-2 text-gray-600 hover:text-primary-500 transition-colors">
-              <ShoppingCart className="h-6 w-6" />
-              <span className="absolute -top-1 -right-1 bg-primary-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                3
-              </span>
-            </Link>
-
             {/* User */}
-            <button className="hidden sm:flex items-center p-2 text-gray-600 hover:text-primary-500 transition-colors">
+            <button className="hidden sm:flex items-center p-2 text-gray-400 hover:text-primary-500 transition-colors">
               <User className="h-6 w-6" />
             </button>
 
             {/* Mobile menu button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden p-2 text-gray-600 hover:text-primary-500 transition-colors"
+              className="md:hidden p-2 text-gray-400 hover:text-primary-500 transition-colors"
             >
               {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
@@ -95,41 +81,32 @@ export default function Header() {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
             <input
               type="text"
-              placeholder="Search for restaurants, cuisines..."
+              placeholder="Search bars, distilleries, events..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
             />
           </div>
         </div>
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden pb-4 border-t border-gray-200">
+          <div className="md:hidden pb-4 border-t border-gray-800">
             <nav className="flex flex-col space-y-4 pt-4">
-              <Link href="/" className="text-gray-700 hover:text-primary-500 transition-colors">
+              <Link href="/" className="text-white hover:text-primary-500 transition-colors">
                 Home
               </Link>
-              <Link href="/order" className="text-gray-700 hover:text-primary-500 transition-colors">
-                Order Now
+              <Link href="/bars" className="text-white hover:text-primary-500 transition-colors">
+                Bars
               </Link>
-              <Link href="/restaurants" className="text-gray-700 hover:text-primary-500 transition-colors">
-                Restaurants
+              <Link href="/distilleries" className="text-white hover:text-primary-500 transition-colors">
+                Distilleries
               </Link>
-              <Link href="/product/1" className="text-gray-700 hover:text-primary-500 transition-colors">
-                Menu Items
+              <Link href="/events" className="text-white hover:text-primary-500 transition-colors">
+                Events
               </Link>
-              <Link href="/collections" className="text-gray-700 hover:text-primary-500 transition-colors">
-                Collections
-              </Link>
-              <Link href="/blog" className="text-gray-700 hover:text-primary-500 transition-colors">
+              <Link href="/blog" className="text-white hover:text-primary-500 transition-colors">
                 Blog
-              </Link>
-              <Link href="/about" className="text-gray-700 hover:text-primary-500 transition-colors">
-                About
-              </Link>
-              <Link href="/cart" className="text-gray-700 hover:text-primary-500 transition-colors">
-                Cart
               </Link>
             </nav>
           </div>
