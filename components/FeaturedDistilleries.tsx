@@ -1,51 +1,28 @@
 'use client'
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
-
-const distilleries = [
-  {
-    id: 1,
-    name: 'Golden Oak Distillery',
-    type: 'Whiskey Distillery',
-    rating: 4.9,
-    reviews: 1247,
-    location: 'Highland Valley',
-    image: 'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=400&h=300&fit=crop',
-    isOpen: true,
-    priceRange: '$$$$',
-    specialties: ['Single Malt', 'Aged Whiskey'],
-    established: '1892'
-  },
-  {
-    id: 2,
-    name: 'Midnight Spirits Co.',
-    type: 'Craft Distillery',
-    rating: 4.8,
-    reviews: 892,
-    location: 'Industrial District',
-    image: 'https://images.unsplash.com/photo-1571266028243-e68f96d85b9a?w=400&h=300&fit=crop',
-    isOpen: true,
-    priceRange: '$$$',
-    specialties: ['Gin', 'Vodka'],
-    established: '2015'
-  },
-  {
-    id: 3,
-    name: 'Heritage Rum Works',
-    type: 'Rum Distillery',
-    rating: 4.7,
-    reviews: 567,
-    location: 'Coastal Region',
-    image: 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=400&h=300&fit=crop',
-    isOpen: true,
-    priceRange: '$$',
-    specialties: ['Aged Rum', 'Spiced Rum'],
-    established: '1923'
-  }
-]
+import { apiService } from '../lib/api'
+import { Distillery } from '../lib/types'
 
 export default function FeaturedDistilleries() {
+  const [distilleries, setDistilleries] = useState<Distillery[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchDistilleries = async () => {
+      try {
+        const response = await apiService.getDistilleries({ limit: 3 })
+        setDistilleries(response.data.data || [])
+      } catch (error) {
+        console.error('Error fetching featured distilleries:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchDistilleries()
+  }, [])
   return (
     <section className="py-16 bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -58,13 +35,18 @@ export default function FeaturedDistilleries() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {distilleries.map((distillery) => (
-            <Link 
-              key={distillery.id} 
-              href={`/distilleries`}
-              className="group cursor-pointer block"
-            >
+        {loading ? (
+          <div className="text-center py-12">
+            <p className="text-gray-400">Loading...</p>
+          </div>
+        ) : distilleries.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {distilleries.map((distillery) => (
+              <Link 
+                key={distillery.id} 
+                href={`/distilleries/${distillery.id}`}
+                className="group cursor-pointer block"
+              >
               <div className="bg-black rounded-xl shadow-lg overflow-hidden hover:shadow-yellow-500/20 transition-shadow">
                 <div className="relative h-48">
                   <div 
@@ -88,11 +70,13 @@ export default function FeaturedDistilleries() {
                       </span>
                     </div>
                   </div>
-                  <div className="absolute bottom-4 left-4">
-                    <span className="px-2 py-1 bg-yellow-500 text-black text-xs rounded font-semibold">
-                      Est. {distillery.established}
-                    </span>
-                  </div>
+                  {distillery.established && (
+                    <div className="absolute bottom-4 left-4">
+                      <span className="px-2 py-1 bg-yellow-500 text-black text-xs rounded font-semibold">
+                        Est. {distillery.established}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="p-6">
@@ -115,7 +99,7 @@ export default function FeaturedDistilleries() {
 
                   <div className="flex items-center justify-between">
                     <div className="text-sm text-gray-400">
-                      {distillery.type} • Est. {distillery.established}
+                      {distillery.type}{distillery.established ? ` • Est. ${distillery.established}` : ''}
                     </div>
                     <div className="text-primary-500 font-semibold">
                       View Details →
@@ -124,8 +108,13 @@ export default function FeaturedDistilleries() {
                 </div>
               </div>
             </Link>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-gray-400">No distilleries available</p>
+          </div>
+        )}
 
         <div className="text-center mt-12">
           <Link 

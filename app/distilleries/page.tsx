@@ -1,92 +1,50 @@
 'use client'
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Header from '../../components/Header'
 import Footer from '../../components/Footer'
-
-const distilleries = [
-  {
-    id: 1,
-    name: 'Golden Oak Distillery',
-    type: 'Whiskey Distillery',
-    rating: 4.9,
-    reviews: 1247,
-    location: 'Highland Valley',
-    image: 'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=400&h=300&fit=crop',
-    isOpen: true,
-    priceRange: '$$$$',
-    specialties: ['Single Malt', 'Aged Whiskey', 'Tasting Tours'],
-    established: '1892'
-  },
-  {
-    id: 2,
-    name: 'Midnight Spirits Co.',
-    type: 'Craft Distillery',
-    rating: 4.8,
-    reviews: 892,
-    location: 'Industrial District',
-    image: 'https://images.unsplash.com/photo-1571266028243-e68f96d85b9a?w=400&h=300&fit=crop',
-    isOpen: true,
-    priceRange: '$$$',
-    specialties: ['Gin', 'Vodka', 'Small Batch'],
-    established: '2015'
-  },
-  {
-    id: 3,
-    name: 'Heritage Rum Works',
-    type: 'Rum Distillery',
-    rating: 4.7,
-    reviews: 567,
-    location: 'Coastal Region',
-    image: 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=400&h=300&fit=crop',
-    isOpen: true,
-    priceRange: '$$',
-    specialties: ['Aged Rum', 'Spiced Rum', 'Cocktail Classes'],
-    established: '1923'
-  },
-  {
-    id: 4,
-    name: 'Artisan Spirits',
-    type: 'Boutique Distillery',
-    rating: 4.6,
-    reviews: 423,
-    location: 'Mountain View',
-    image: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=400&h=300&fit=crop',
-    isOpen: true,
-    priceRange: '$$$',
-    specialties: ['Tequila', 'Mezcal', 'Private Tastings'],
-    established: '2008'
-  },
-  {
-    id: 5,
-    name: 'Urban Brewery & Distillery',
-    type: 'Hybrid Facility',
-    rating: 4.5,
-    reviews: 789,
-    location: 'Downtown',
-    image: 'https://images.unsplash.com/photo-1572116469696-31de0f17cc34?w=400&h=300&fit=crop',
-    isOpen: false,
-    priceRange: '$$',
-    specialties: ['Craft Beer', 'Whiskey', 'Brewery Tours'],
-    established: '2010'
-  },
-  {
-    id: 6,
-    name: 'Vintage Brandy House',
-    type: 'Brandy Distillery',
-    rating: 4.4,
-    reviews: 634,
-    location: 'Wine Country',
-    image: 'https://images.unsplash.com/photo-1566737236500-c8ac43014a67?w=400&h=300&fit=crop',
-    isOpen: true,
-    priceRange: '$$$$',
-    specialties: ['Cognac', 'Armagnac', 'Wine Pairing'],
-    established: '1876'
-  }
-]
+import LoadingSpinner from '../../components/LoadingSpinner'
+import { apiService } from '../../lib/api'
+import { Distillery } from '../../lib/types'
 
 export default function DistilleriesPage() {
+  const [distilleries, setDistilleries] = useState<Distillery[]>([])
+  const [loading, setLoading] = useState(true)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [typeFilter, setTypeFilter] = useState('All Types')
+  const [locationFilter, setLocationFilter] = useState('All Locations')
+
+  useEffect(() => {
+    const fetchDistilleries = async () => {
+      try {
+        setLoading(true)
+        const response = await apiService.getDistilleries()
+        setDistilleries(response.data.data || [])
+      } catch (error) {
+        console.error('Error fetching distilleries:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchDistilleries()
+  }, [])
+
+  const filteredDistilleries = distilleries.filter((distillery) => {
+    const matchesSearch = 
+      distillery.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      distillery.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      distillery.type.toLowerCase().includes(searchTerm.toLowerCase())
+    
+    const matchesType = typeFilter === 'All Types' || distillery.type === typeFilter
+    const matchesLocation = locationFilter === 'All Locations' || distillery.location === locationFilter
+    
+    return matchesSearch && matchesType && matchesLocation
+  })
+
+  const uniqueTypes = ['All Types', ...new Set(distilleries.map(d => d.type))]
+  const uniqueLocations = ['All Locations', ...new Set(distilleries.map(d => d.location))]
   return (
     <div className="min-h-screen bg-black text-white">
       <Header />
@@ -114,27 +72,29 @@ export default function DistilleriesPage() {
                 <input
                   type="text"
                   placeholder="Search distilleries, spirits, or locations..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                 />
               </div>
               <div className="flex gap-4">
-                <select className="px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-yellow-500">
-                  <option>All Types</option>
-                  <option>Whiskey Distillery</option>
-                  <option>Craft Distillery</option>
-                  <option>Rum Distillery</option>
-                  <option>Boutique Distillery</option>
-                  <option>Hybrid Facility</option>
-                  <option>Brandy Distillery</option>
+                <select 
+                  value={typeFilter}
+                  onChange={(e) => setTypeFilter(e.target.value)}
+                  className="px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-yellow-500"
+                >
+                  {uniqueTypes.map(type => (
+                    <option key={type} value={type}>{type}</option>
+                  ))}
                 </select>
-                <select className="px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-yellow-500">
-                  <option>All Locations</option>
-                  <option>Highland Valley</option>
-                  <option>Industrial District</option>
-                  <option>Coastal Region</option>
-                  <option>Mountain View</option>
-                  <option>Downtown</option>
-                  <option>Wine Country</option>
+                <select 
+                  value={locationFilter}
+                  onChange={(e) => setLocationFilter(e.target.value)}
+                  className="px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-yellow-500"
+                >
+                  {uniqueLocations.map(location => (
+                    <option key={location} value={location}>{location}</option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -144,9 +104,15 @@ export default function DistilleriesPage() {
         {/* Distilleries Grid */}
         <section className="py-16 bg-black">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {distilleries.map((distillery) => (
-                <div key={distillery.id} className="bg-gray-900 rounded-xl shadow-lg overflow-hidden hover:shadow-yellow-500/20 transition-shadow group cursor-pointer">
+            {loading ? (
+              <div className="flex justify-center py-12">
+                <LoadingSpinner />
+              </div>
+            ) : filteredDistilleries.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {filteredDistilleries.map((distillery) => (
+                  <Link key={distillery.id} href={`/distilleries/${distillery.id}`}>
+                    <div className="bg-gray-900 rounded-xl shadow-lg overflow-hidden hover:shadow-yellow-500/20 transition-shadow group cursor-pointer">
                   {/* Distillery Image */}
                   <div className="relative h-48">
                     <div 
@@ -170,11 +136,13 @@ export default function DistilleriesPage() {
                         </span>
                       </div>
                     </div>
-                    <div className="absolute bottom-4 left-4">
-                      <span className="px-2 py-1 bg-yellow-500 text-black text-xs rounded font-semibold">
-                        Est. {distillery.established}
-                      </span>
-                    </div>
+                    {distillery.established && (
+                      <div className="absolute bottom-4 left-4">
+                        <span className="px-2 py-1 bg-yellow-500 text-black text-xs rounded font-semibold">
+                          Est. {distillery.established}
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   {/* Distillery Info */}
@@ -210,7 +178,7 @@ export default function DistilleriesPage() {
 
                     <div className="flex items-center justify-between">
                       <div className="text-sm text-gray-400">
-                        {distillery.type} • Est. {distillery.established}
+                        {distillery.type}{distillery.established ? ` • Est. ${distillery.established}` : ''}
                       </div>
                       <div className="text-yellow-400 font-semibold">
                         View Details →
@@ -218,14 +186,14 @@ export default function DistilleriesPage() {
                     </div>
                   </div>
                 </div>
-              ))}
-            </div>
-
-            <div className="text-center mt-12">
-              <button className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-3 px-8 rounded-lg transition-colors">
-                Load More Distilleries
-              </button>
-            </div>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-gray-400 text-lg">No distilleries found</p>
+              </div>
+            )}
           </div>
         </section>
       </main>

@@ -1,86 +1,50 @@
 'use client'
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Header from '../../components/Header'
 import Footer from '../../components/Footer'
-
-const bars = [
-  {
-    id: 1,
-    name: 'The Golden Hour',
-    type: 'Cocktail Bar',
-    rating: 4.8,
-    reviews: 1247,
-    location: 'Downtown',
-    image: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=400&h=300&fit=crop',
-    isOpen: true,
-    priceRange: '$$$',
-    specialties: ['Craft Cocktails', 'Premium Spirits', 'Live Music']
-  },
-  {
-    id: 2,
-    name: 'Midnight Lounge',
-    type: 'Speakeasy',
-    rating: 4.9,
-    reviews: 892,
-    location: 'Arts District',
-    image: 'https://images.unsplash.com/photo-1572116469696-31de0f17cc34?w=400&h=300&fit=crop',
-    isOpen: true,
-    priceRange: '$$$$',
-    specialties: ['Vintage Cocktails', 'Exclusive Spirits', 'Intimate Setting']
-  },
-  {
-    id: 3,
-    name: 'Sky Bar',
-    type: 'Rooftop Bar',
-    rating: 4.6,
-    reviews: 567,
-    location: 'Financial District',
-    image: 'https://images.unsplash.com/photo-1566737236500-c8ac43014a67?w=400&h=300&fit=crop',
-    isOpen: true,
-    priceRange: '$$$',
-    specialties: ['City Views', 'Champagne', 'Sunset Drinks']
-  },
-  {
-    id: 4,
-    name: 'The Whiskey Den',
-    type: 'Whiskey Bar',
-    rating: 4.7,
-    reviews: 423,
-    location: 'Old Town',
-    image: 'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=400&h=300&fit=crop',
-    isOpen: true,
-    priceRange: '$$',
-    specialties: ['Rare Whiskeys', 'Cigar Lounge', 'Classic Cocktails']
-  },
-  {
-    id: 5,
-    name: 'Neon Nights',
-    type: 'Nightclub',
-    rating: 4.5,
-    reviews: 789,
-    location: 'Entertainment District',
-    image: 'https://images.unsplash.com/photo-1571266028243-e68f96d85b9a?w=400&h=300&fit=crop',
-    isOpen: false,
-    priceRange: '$$',
-    specialties: ['Dancing', 'DJ Sets', 'VIP Tables']
-  },
-  {
-    id: 6,
-    name: 'The Wine Cellar',
-    type: 'Wine Bar',
-    rating: 4.4,
-    reviews: 634,
-    location: 'Historic Quarter',
-    image: 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=400&h=300&fit=crop',
-    isOpen: true,
-    priceRange: '$$$',
-    specialties: ['Fine Wines', 'Cheese Platters', 'Sommelier Service']
-  }
-]
+import LoadingSpinner from '../../components/LoadingSpinner'
+import { apiService } from '../../lib/api'
+import { Bar } from '../../lib/types'
 
 export default function BarsPage() {
+  const [bars, setBars] = useState<Bar[]>([])
+  const [loading, setLoading] = useState(true)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [typeFilter, setTypeFilter] = useState('All Types')
+  const [locationFilter, setLocationFilter] = useState('All Locations')
+
+  useEffect(() => {
+    const fetchBars = async () => {
+      try {
+        setLoading(true)
+        const response = await apiService.getBars()
+        setBars(response.data.data || [])
+      } catch (error) {
+        console.error('Error fetching bars:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchBars()
+  }, [])
+
+  const filteredBars = bars.filter((bar) => {
+    const matchesSearch = 
+      bar.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      bar.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      bar.type.toLowerCase().includes(searchTerm.toLowerCase())
+    
+    const matchesType = typeFilter === 'All Types' || bar.type === typeFilter
+    const matchesLocation = locationFilter === 'All Locations' || bar.location === locationFilter
+    
+    return matchesSearch && matchesType && matchesLocation
+  })
+
+  const uniqueTypes = ['All Types', ...new Set(bars.map(bar => bar.type))]
+  const uniqueLocations = ['All Locations', ...new Set(bars.map(bar => bar.location))]
   return (
     <div className="min-h-screen bg-black text-white">
       <Header />
@@ -108,27 +72,29 @@ export default function BarsPage() {
                 <input
                   type="text"
                   placeholder="Search bars, locations, or types..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                 />
               </div>
               <div className="flex gap-4">
-                <select className="px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-yellow-500">
-                  <option>All Types</option>
-                  <option>Cocktail Bar</option>
-                  <option>Speakeasy</option>
-                  <option>Rooftop Bar</option>
-                  <option>Whiskey Bar</option>
-                  <option>Nightclub</option>
-                  <option>Wine Bar</option>
+                <select 
+                  value={typeFilter}
+                  onChange={(e) => setTypeFilter(e.target.value)}
+                  className="px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-yellow-500"
+                >
+                  {uniqueTypes.map(type => (
+                    <option key={type} value={type}>{type}</option>
+                  ))}
                 </select>
-                <select className="px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-yellow-500">
-                  <option>All Locations</option>
-                  <option>Downtown</option>
-                  <option>Arts District</option>
-                  <option>Financial District</option>
-                  <option>Old Town</option>
-                  <option>Entertainment District</option>
-                  <option>Historic Quarter</option>
+                <select 
+                  value={locationFilter}
+                  onChange={(e) => setLocationFilter(e.target.value)}
+                  className="px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-yellow-500"
+                >
+                  {uniqueLocations.map(location => (
+                    <option key={location} value={location}>{location}</option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -138,9 +104,15 @@ export default function BarsPage() {
         {/* Bars Grid */}
         <section className="py-16 bg-black">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {bars.map((bar) => (
-                <div key={bar.id} className="bg-gray-900 rounded-xl shadow-lg overflow-hidden hover:shadow-yellow-500/20 transition-shadow group cursor-pointer">
+            {loading ? (
+              <div className="flex justify-center py-12">
+                <LoadingSpinner />
+              </div>
+            ) : filteredBars.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {filteredBars.map((bar) => (
+                  <Link key={bar.id} href={`/bars/${bar.id}`}>
+                    <div className="bg-gray-900 rounded-xl shadow-lg overflow-hidden hover:shadow-yellow-500/20 transition-shadow group cursor-pointer">
                   {/* Bar Image */}
                   <div className="relative h-48">
                     <div 
@@ -212,14 +184,14 @@ export default function BarsPage() {
                     </div>
                   </div>
                 </div>
-              ))}
-            </div>
-
-            <div className="text-center mt-12">
-              <button className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-3 px-8 rounded-lg transition-colors">
-                Load More Bars
-              </button>
-            </div>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-gray-400 text-lg">No bars found</p>
+              </div>
+            )}
           </div>
         </section>
       </main>

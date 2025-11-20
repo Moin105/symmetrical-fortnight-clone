@@ -1,45 +1,28 @@
 'use client'
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
-
-const blogPosts = [
-  {
-    id: 1,
-    title: 'The Art of Craft Cocktails',
-    excerpt: 'Discover the secrets behind creating perfect craft cocktails from master mixologists.',
-    author: 'Sarah Johnson',
-    date: '2024-02-10',
-    readTime: '5 min read',
-    category: 'Cocktails',
-    image: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=400&h=300&fit=crop',
-    featured: true
-  },
-  {
-    id: 2,
-    title: 'Whiskey Tasting Guide',
-    excerpt: 'Learn how to properly taste and appreciate different types of whiskey.',
-    author: 'Michael Chen',
-    date: '2024-02-08',
-    readTime: '7 min read',
-    category: 'Spirits',
-    image: 'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=400&h=300&fit=crop',
-    featured: false
-  },
-  {
-    id: 3,
-    title: 'Best Rooftop Bars in the City',
-    excerpt: 'Explore the most stunning rooftop bars with breathtaking city views.',
-    author: 'Emma Davis',
-    date: '2024-02-05',
-    readTime: '6 min read',
-    category: 'Bars',
-    image: 'https://images.unsplash.com/photo-1566737236500-c8ac43014a67?w=400&h=300&fit=crop',
-    featured: false
-  }
-]
+import { apiService } from '../lib/api'
+import { Blog } from '../lib/types'
 
 export default function FeaturedBlogs() {
+  const [blogPosts, setBlogPosts] = useState<Blog[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        const response = await apiService.getBlogs({ limit: 3, featured: true })
+        setBlogPosts(response.data.data || [])
+      } catch (error) {
+        console.error('Error fetching featured blogs:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchBlogs()
+  }, [])
   return (
     <section className="py-16 bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -52,8 +35,13 @@ export default function FeaturedBlogs() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {blogPosts.map((post) => (
+        {loading ? (
+          <div className="text-center py-12">
+            <p className="text-gray-400">Loading...</p>
+          </div>
+        ) : blogPosts.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {blogPosts.map((post) => (
             <Link 
               key={post.id} 
               href={`/blog/${post.id}`}
@@ -113,8 +101,13 @@ export default function FeaturedBlogs() {
                 </div>
               </div>
             </Link>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-gray-400">No blog posts available</p>
+          </div>
+        )}
 
         <div className="text-center mt-12">
           <Link 

@@ -1,92 +1,47 @@
 'use client'
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Header from '../../components/Header'
 import Footer from '../../components/Footer'
-
-const events = [
-  {
-    id: 1,
-    name: 'Golden Hour Cocktail Masterclass',
-    type: 'Workshop',
-    date: '2024-02-15',
-    time: '7:00 PM',
-    location: 'The Golden Hour Bar',
-    image: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=400&h=300&fit=crop',
-    price: '$75',
-    capacity: '20 people',
-    description: 'Learn to craft premium cocktails with expert mixologists',
-    category: 'Education'
-  },
-  {
-    id: 2,
-    name: 'Whiskey Tasting Experience',
-    type: 'Tasting',
-    date: '2024-02-18',
-    time: '6:30 PM',
-    location: 'Golden Oak Distillery',
-    image: 'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=400&h=300&fit=crop',
-    price: '$120',
-    capacity: '15 people',
-    description: 'Exclusive tasting of rare and aged whiskeys',
-    category: 'Tasting'
-  },
-  {
-    id: 3,
-    name: 'Midnight Jazz Night',
-    type: 'Live Music',
-    date: '2024-02-20',
-    time: '9:00 PM',
-    location: 'Midnight Lounge',
-    image: 'https://images.unsplash.com/photo-1572116469696-31de0f17cc34?w=400&h=300&fit=crop',
-    price: '$45',
-    capacity: '50 people',
-    description: 'Intimate jazz performance in a speakeasy setting',
-    category: 'Entertainment'
-  },
-  {
-    id: 4,
-    name: 'Rooftop Sunset Party',
-    type: 'Social Event',
-    date: '2024-02-22',
-    time: '5:00 PM',
-    location: 'Sky Bar',
-    image: 'https://images.unsplash.com/photo-1566737236500-c8ac43014a67?w=400&h=300&fit=crop',
-    price: '$60',
-    capacity: '100 people',
-    description: 'Celebrate sunset with premium drinks and city views',
-    category: 'Social'
-  },
-  {
-    id: 5,
-    name: 'Craft Spirits Festival',
-    type: 'Festival',
-    date: '2024-02-25',
-    time: '2:00 PM',
-    location: 'Industrial District',
-    image: 'https://images.unsplash.com/photo-1571266028243-e68f96d85b9a?w=400&h=300&fit=crop',
-    price: '$85',
-    capacity: '200 people',
-    description: 'Sample craft spirits from local distilleries',
-    category: 'Festival'
-  },
-  {
-    id: 6,
-    name: 'Wine & Cheese Pairing',
-    type: 'Tasting',
-    date: '2024-02-28',
-    time: '7:30 PM',
-    location: 'The Wine Cellar',
-    image: 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=400&h=300&fit=crop',
-    price: '$95',
-    capacity: '25 people',
-    description: 'Expert-led wine and cheese pairing experience',
-    category: 'Tasting'
-  }
-]
+import LoadingSpinner from '../../components/LoadingSpinner'
+import { apiService } from '../../lib/api'
+import { Event } from '../../lib/types'
 
 export default function EventsPage() {
+  const [events, setEvents] = useState<Event[]>([])
+  const [loading, setLoading] = useState(true)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [categoryFilter, setCategoryFilter] = useState('All Categories')
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        setLoading(true)
+        const response = await apiService.getEvents()
+        setEvents(response.data.data || [])
+      } catch (error) {
+        console.error('Error fetching events:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchEvents()
+  }, [])
+
+  const filteredEvents = events.filter((event) => {
+    const matchesSearch = 
+      event.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      event.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      event.category.toLowerCase().includes(searchTerm.toLowerCase())
+    
+    const matchesCategory = categoryFilter === 'All Categories' || event.category === categoryFilter
+    
+    return matchesSearch && matchesCategory
+  })
+
+  const uniqueCategories = ['All Categories', ...new Set(events.map(e => e.category))]
   return (
     <div className="min-h-screen bg-black text-white">
       <Header />
@@ -114,24 +69,20 @@ export default function EventsPage() {
                 <input
                   type="text"
                   placeholder="Search events, venues, or categories..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                 />
               </div>
               <div className="flex gap-4">
-                <select className="px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-yellow-500">
-                  <option>All Categories</option>
-                  <option>Education</option>
-                  <option>Tasting</option>
-                  <option>Entertainment</option>
-                  <option>Social</option>
-                  <option>Festival</option>
-                </select>
-                <select className="px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-yellow-500">
-                  <option>All Dates</option>
-                  <option>This Week</option>
-                  <option>Next Week</option>
-                  <option>This Month</option>
-                  <option>Next Month</option>
+                <select 
+                  value={categoryFilter}
+                  onChange={(e) => setCategoryFilter(e.target.value)}
+                  className="px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-yellow-500"
+                >
+                  {uniqueCategories.map(category => (
+                    <option key={category} value={category}>{category}</option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -141,9 +92,15 @@ export default function EventsPage() {
         {/* Events Grid */}
         <section className="py-16 bg-black">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {events.map((event) => (
-                <div key={event.id} className="bg-gray-900 rounded-xl shadow-lg overflow-hidden hover:shadow-yellow-500/20 transition-shadow group cursor-pointer">
+            {loading ? (
+              <div className="flex justify-center py-12">
+                <LoadingSpinner />
+              </div>
+            ) : filteredEvents.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {filteredEvents.map((event) => (
+                  <Link key={event.id} href={`/events/${event.id}`}>
+                    <div className="bg-gray-900 rounded-xl shadow-lg overflow-hidden hover:shadow-yellow-500/20 transition-shadow group cursor-pointer">
                   {/* Event Image */}
                   <div className="relative h-48">
                     <div 
@@ -207,14 +164,14 @@ export default function EventsPage() {
                     </div>
                   </div>
                 </div>
-              ))}
-            </div>
-
-            <div className="text-center mt-12">
-              <button className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-3 px-8 rounded-lg transition-colors">
-                Load More Events
-              </button>
-            </div>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-gray-400 text-lg">No events found</p>
+              </div>
+            )}
           </div>
         </section>
       </main>

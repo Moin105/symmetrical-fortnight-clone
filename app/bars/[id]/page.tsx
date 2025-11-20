@@ -1,12 +1,16 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useRouter, useParams } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { Star, MapPin, Clock, Phone, Share2, Heart, Users, Wifi, Car, CreditCard } from 'lucide-react'
+import { Star, MapPin, Clock, Phone, Share2, Heart, Users, Wifi, Car, CreditCard, X } from 'lucide-react'
 import Header from '../../../components/Header'
 import Footer from '../../../components/Footer'
+import LoadingSpinner from '../../../components/LoadingSpinner'
+import { apiService } from '../../../lib/api'
+import { Bar } from '../../../lib/types'
 
-const barDetails = {
+const staticBarDetails = {
   id: 1,
   name: 'The Golden Hour',
   type: 'Cocktail Bar',
@@ -78,10 +82,82 @@ const reviews = [
   }
 ]
 
-export default function BarDetailPage({ params }: { params: { id: string } }) {
+export default function BarDetailPage() {
+  const router = useRouter()
+  const params = useParams()
+  const id = params?.id as string
+  const [bar, setBar] = useState<Bar | null>(null)
+  const [loading, setLoading] = useState(true)
   const [selectedImage, setSelectedImage] = useState(0)
   const [activeTab, setActiveTab] = useState('overview')
   const [isFavorite, setIsFavorite] = useState(false)
+  const [showBookingModal, setShowBookingModal] = useState(false)
+  const [bookingForm, setBookingForm] = useState({
+    customerName: '',
+    customerEmail: '',
+    customerPhone: '',
+    bookingDate: '',
+    bookingTime: '',
+    numberOfGuests: 2,
+    specialRequests: '',
+  })
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    const fetchBar = async () => {
+      try {
+        setLoading(true)
+        const response = await apiService.getBar(Number(id))
+        setBar(response.data)
+      } catch (error) {
+        console.error('Error fetching bar:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    if (id) {
+      fetchBar()
+    }
+  }, [id])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    )
+  }
+
+  if (!bar) {
+    return (
+      <div className="min-h-screen bg-black">
+        <Header />
+        <main className="bg-black py-12">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 className="text-2xl font-bold text-white mb-4">Bar Not Found</h1>
+            <button onClick={() => router.push('/bars')} className="text-primary-500 hover:text-primary-600">
+              ← Back to Bars
+            </button>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    )
+  }
+
+  // Use bar data from API, fallback to static data for missing fields
+  const barDetails = {
+    ...staticBarDetails,
+    ...bar,
+    images: bar.image ? [bar.image] : staticBarDetails.images,
+    address: bar.address || staticBarDetails.address,
+    phone: bar.phone || staticBarDetails.phone,
+    website: bar.website || staticBarDetails.website,
+    hours: bar.operatingHours || staticBarDetails.hours,
+    description: bar.description || staticBarDetails.description,
+  }
 
   const tabs = [
     { id: 'overview', label: 'Overview' },
@@ -89,6 +165,35 @@ export default function BarDetailPage({ params }: { params: { id: string } }) {
     { id: 'reviews', label: 'Reviews' },
     { id: 'photos', label: 'Photos' }
   ]
+
+  const handleBooking = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
+    setIsSubmitting(true)
+
+    try {
+      const orderData = {
+        orderType: 'bar_reservation',
+        barId: parseInt(id),
+        customerName: bookingForm.customerName,
+        customerEmail: bookingForm.customerEmail,
+        customerPhone: bookingForm.customerPhone,
+        numberOfGuests: bookingForm.numberOfGuests,
+        totalAmount: 0, // Bar reservations might not have upfront payment
+        bookingDate: bookingForm.bookingDate,
+        bookingTime: bookingForm.bookingTime,
+        specialRequests: bookingForm.specialRequests,
+        paymentMethod: 'on-site',
+        isPaid: false,
+      }
+
+      const response = await apiService.createOrder(orderData)
+      router.push(`/orders/${response.data.id}`)
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to create reservation. Please try again.')
+      setIsSubmitting(false)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -348,7 +453,10 @@ export default function BarDetailPage({ params }: { params: { id: string } }) {
                     </div>
                   </div>
 
-                  <button className="w-full mt-6 bg-primary-500 hover:bg-primary-600 text-black font-semibold py-3 px-4 rounded-lg transition-colors">
+                  <button 
+                    onClick={() => setShowBookingModal(true)}
+                    className="w-full mt-6 bg-primary-500 hover:bg-primary-600 text-black font-semibold py-3 px-4 rounded-lg transition-colors"
+                  >
                     Make Reservation
                   </button>
                 </div>
@@ -388,6 +496,130 @@ export default function BarDetailPage({ params }: { params: { id: string } }) {
       </main>
 
       <Footer />
+
+      {/* Booking Modal */}
+      {showBookingModal && (
+        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-gray-900 rounded-lg max-w-md w-full p-6 relative max-h-[90vh] overflow-y-auto"
+          >
+            <button
+              onClick={() => setShowBookingModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white"
+            >
+              <X className="w-6 h-6" />
+            </button>
+
+            <h2 className="text-2xl font-bold mb-4">Make Reservation</h2>
+            <p className="text-gray-400 mb-6">{barDetails.name}</p>
+
+            <form onSubmit={handleBooking} className="space-y-4">
+              {error && (
+                <div className="bg-red-500/20 border border-red-500 text-red-400 px-4 py-3 rounded">
+                  {error}
+                </div>
+              )}
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Full Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={bookingForm.customerName}
+                  onChange={(e) => setBookingForm({ ...bookingForm, customerName: e.target.value })}
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Email *</label>
+                <input
+                  type="email"
+                  required
+                  value={bookingForm.customerEmail}
+                  onChange={(e) => setBookingForm({ ...bookingForm, customerEmail: e.target.value })}
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Phone</label>
+                <input
+                  type="tel"
+                  value={bookingForm.customerPhone}
+                  onChange={(e) => setBookingForm({ ...bookingForm, customerPhone: e.target.value })}
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Date *</label>
+                <input
+                  type="date"
+                  required
+                  value={bookingForm.bookingDate}
+                  onChange={(e) => setBookingForm({ ...bookingForm, bookingDate: e.target.value })}
+                  min={new Date().toISOString().split('T')[0]}
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Time *</label>
+                <input
+                  type="time"
+                  required
+                  value={bookingForm.bookingTime}
+                  onChange={(e) => setBookingForm({ ...bookingForm, bookingTime: e.target.value })}
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Number of Guests *</label>
+                <input
+                  type="number"
+                  required
+                  min="1"
+                  max="20"
+                  value={bookingForm.numberOfGuests}
+                  onChange={(e) => setBookingForm({ ...bookingForm, numberOfGuests: parseInt(e.target.value) })}
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Special Requests</label>
+                <textarea
+                  value={bookingForm.specialRequests}
+                  onChange={(e) => setBookingForm({ ...bookingForm, specialRequests: e.target.value })}
+                  rows={3}
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500"
+                />
+              </div>
+
+              <div className="flex space-x-3">
+                <button
+                  type="button"
+                  onClick={() => setShowBookingModal(false)}
+                  className="flex-1 bg-gray-800 hover:bg-gray-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="flex-1 bg-primary-500 hover:bg-primary-600 text-black font-semibold py-3 px-4 rounded-lg transition-colors disabled:opacity-50"
+                >
+                  {isSubmitting ? 'Processing...' : 'Confirm Reservation'}
+                </button>
+              </div>
+            </form>
+          </motion.div>
+        </div>
+      )}
     </div>
   )
 }

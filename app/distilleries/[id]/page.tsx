@@ -1,12 +1,16 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useRouter, useParams } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { Star, MapPin, Clock, Phone, Share2, Heart, Calendar, Award, Users, Factory } from 'lucide-react'
+import { Star, MapPin, Clock, Phone, Share2, Heart, Calendar, Award, Users, Factory, X } from 'lucide-react'
 import Header from '../../../components/Header'
 import Footer from '../../../components/Footer'
+import LoadingSpinner from '../../../components/LoadingSpinner'
+import { apiService } from '../../../lib/api'
+import { Distillery } from '../../../lib/types'
 
-const distilleryDetails = {
+const staticDistilleryDetails = {
   id: 1,
   name: 'Golden Oak Distillery',
   type: 'Whiskey Distillery',
@@ -85,10 +89,86 @@ const reviews = [
   }
 ]
 
-export default function DistilleryDetailPage({ params }: { params: { id: string } }) {
+export default function DistilleryDetailPage() {
+  const router = useRouter()
+  const params = useParams()
+  const id = params?.id as string
+  const [distillery, setDistillery] = useState<Distillery | null>(null)
+  const [loading, setLoading] = useState(true)
   const [selectedImage, setSelectedImage] = useState(0)
   const [activeTab, setActiveTab] = useState('overview')
   const [isFavorite, setIsFavorite] = useState(false)
+  const [showBookingModal, setShowBookingModal] = useState(false)
+  const [selectedTour, setSelectedTour] = useState<any>(null)
+  const [bookingForm, setBookingForm] = useState({
+    customerName: '',
+    customerEmail: '',
+    customerPhone: '',
+    bookingDate: '',
+    numberOfGuests: 2,
+    specialRequests: '',
+  })
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    const fetchDistillery = async () => {
+      try {
+        setLoading(true)
+        const response = await apiService.getDistillery(Number(id))
+        setDistillery(response.data)
+      } catch (error) {
+        console.error('Error fetching distillery:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    if (id) {
+      fetchDistillery()
+    }
+  }, [id])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    )
+  }
+
+  if (!distillery) {
+    return (
+      <div className="min-h-screen bg-black">
+        <Header />
+        <main className="bg-black py-12">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 className="text-2xl font-bold text-white mb-4">Distillery Not Found</h1>
+            <button onClick={() => router.push('/distilleries')} className="text-primary-500 hover:text-primary-600">
+              ← Back to Distilleries
+            </button>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    )
+  }
+
+  // Use distillery data from API, fallback to static data for missing fields
+  const distilleryDetails = {
+    ...staticDistilleryDetails,
+    ...distillery,
+    images: distillery.image ? [distillery.image] : staticDistilleryDetails.images,
+    address: distillery.address || staticDistilleryDetails.address,
+    phone: distillery.phone || staticDistilleryDetails.phone,
+    website: distillery.website || staticDistilleryDetails.website,
+    hours: distillery.operatingHours || staticDistilleryDetails.hours,
+    description: distillery.description || staticDistilleryDetails.description,
+    products: {
+      ...staticDistilleryDetails.products,
+      tours: staticDistilleryDetails.products.tours || [],
+    },
+  }
 
   const tabs = [
     { id: 'overview', label: 'Overview' },
@@ -96,6 +176,42 @@ export default function DistilleryDetailPage({ params }: { params: { id: string 
     { id: 'tours', label: 'Tours' },
     { id: 'reviews', label: 'Reviews' }
   ]
+
+  const handleTourBooking = (tour: typeof distilleryDetails.products.tours[0]) => {
+    setSelectedTour(tour)
+    setShowBookingModal(true)
+  }
+
+  const handleBooking = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!selectedTour) return
+
+    setError('')
+    setIsSubmitting(true)
+
+    try {
+      const price = parseInt(selectedTour.price.replace('$', ''))
+      const orderData = {
+        orderType: 'distillery_tour',
+        distilleryId: parseInt(id),
+        customerName: bookingForm.customerName,
+        customerEmail: bookingForm.customerEmail,
+        customerPhone: bookingForm.customerPhone,
+        numberOfGuests: bookingForm.numberOfGuests,
+        totalAmount: price * bookingForm.numberOfGuests,
+        bookingDate: bookingForm.bookingDate,
+        specialRequests: bookingForm.specialRequests || `Tour: ${selectedTour.name}`,
+        paymentMethod: 'online',
+        isPaid: false,
+      }
+
+      const response = await apiService.createOrder(orderData)
+      router.push(`/orders/${response.data.id}`)
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to create booking. Please try again.')
+      setIsSubmitting(false)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -271,23 +387,46 @@ export default function DistilleryDetailPage({ params }: { params: { id: string 
                   >
                     <div>
                       <h2 className="text-2xl font-bold mb-6">Distillery Tours</h2>
-                      <div className="space-y-6">
-                        {distilleryDetails.products.tours.map((tour, index) => (
-                          <div key={index} className="bg-gray-900 p-6 rounded-lg">
-                            <div className="flex justify-between items-start mb-3">
-                              <div>
-                                <h3 className="font-semibold text-xl">{tour.name}</h3>
-                                <p className="text-gray-400">{tour.duration}</p>
+                      {distilleryDetails.products.tours && distilleryDetails.products.tours.length > 0 ? (
+                        <div className="space-y-6">
+                          {distilleryDetails.products.tours.map((tour, index) => (
+                            <div key={index} className="bg-gray-900 p-6 rounded-lg">
+                              <div className="flex justify-between items-start mb-3">
+                                <div>
+                                  <h3 className="font-semibold text-xl">{tour.name}</h3>
+                                  <p className="text-gray-400">{tour.duration}</p>
+                                </div>
+                                <span className="text-primary-500 font-bold text-xl">{tour.price}</span>
                               </div>
-                              <span className="text-primary-500 font-bold text-xl">{tour.price}</span>
+                              <p className="text-gray-300 mb-4">{tour.description}</p>
+                              <button 
+                                onClick={() => handleTourBooking(tour)}
+                                className="bg-primary-500 hover:bg-primary-600 text-black font-semibold py-2 px-4 rounded-lg transition-colors"
+                              >
+                                Book Tour
+                              </button>
                             </div>
-                            <p className="text-gray-300 mb-4">{tour.description}</p>
-                            <button className="bg-primary-500 hover:bg-primary-600 text-black font-semibold py-2 px-4 rounded-lg transition-colors">
-                              Book Tour
-                            </button>
-                          </div>
-                        ))}
-                      </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="bg-gray-900 p-6 rounded-lg text-center">
+                          <p className="text-gray-400 mb-4">No tours available at this time.</p>
+                          <button 
+                            onClick={() => {
+                              const defaultTour = {
+                                name: 'Standard Tour',
+                                price: '$25',
+                                duration: '1 hour',
+                                description: 'Guided tour of the distillery'
+                              }
+                              handleTourBooking(defaultTour)
+                            }}
+                            className="bg-primary-500 hover:bg-primary-600 text-black font-semibold py-2 px-4 rounded-lg transition-colors"
+                          >
+                            Book Standard Tour
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </motion.div>
                 )}
@@ -369,9 +508,34 @@ export default function DistilleryDetailPage({ params }: { params: { id: string 
                     </div>
                   </div>
 
-                  <button className="w-full mt-6 bg-primary-500 hover:bg-primary-600 text-black font-semibold py-3 px-4 rounded-lg transition-colors">
-                    Book Tour
-                  </button>
+                  {distilleryDetails.products.tours && distilleryDetails.products.tours.length > 0 ? (
+                    <button 
+                      onClick={() => {
+                        setSelectedTour(distilleryDetails.products.tours[0])
+                        setShowBookingModal(true)
+                      }}
+                      className="w-full mt-6 bg-primary-500 hover:bg-primary-600 text-black font-semibold py-3 px-4 rounded-lg transition-colors"
+                    >
+                      Book Tour
+                    </button>
+                  ) : (
+                    <button 
+                      onClick={() => {
+                        // Create a default tour if none exists
+                        const defaultTour = {
+                          name: 'Standard Tour',
+                          price: '$25',
+                          duration: '1 hour',
+                          description: 'Guided tour of the distillery'
+                        }
+                        setSelectedTour(defaultTour)
+                        setShowBookingModal(true)
+                      }}
+                      className="w-full mt-6 bg-primary-500 hover:bg-primary-600 text-black font-semibold py-3 px-4 rounded-lg transition-colors"
+                    >
+                      Book Tour
+                    </button>
+                  )}
                 </div>
 
                 {/* Hours */}
@@ -409,6 +573,135 @@ export default function DistilleryDetailPage({ params }: { params: { id: string 
       </main>
 
       <Footer />
+
+      {/* Booking Modal */}
+      {showBookingModal && selectedTour && (
+        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-gray-900 rounded-lg max-w-md w-full p-6 relative max-h-[90vh] overflow-y-auto"
+          >
+            <button
+              onClick={() => {
+                setShowBookingModal(false)
+                setSelectedTour(null)
+              }}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white"
+            >
+              <X className="w-6 h-6" />
+            </button>
+
+            <h2 className="text-2xl font-bold mb-4">Book Tour</h2>
+            <p className="text-gray-400 mb-2">{selectedTour.name}</p>
+            <p className="text-primary-500 font-semibold mb-6">{selectedTour.price} per person</p>
+
+            <form onSubmit={handleBooking} className="space-y-4">
+              {error && (
+                <div className="bg-red-500/20 border border-red-500 text-red-400 px-4 py-3 rounded">
+                  {error}
+                </div>
+              )}
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Full Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={bookingForm.customerName}
+                  onChange={(e) => setBookingForm({ ...bookingForm, customerName: e.target.value })}
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Email *</label>
+                <input
+                  type="email"
+                  required
+                  value={bookingForm.customerEmail}
+                  onChange={(e) => setBookingForm({ ...bookingForm, customerEmail: e.target.value })}
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Phone</label>
+                <input
+                  type="tel"
+                  value={bookingForm.customerPhone}
+                  onChange={(e) => setBookingForm({ ...bookingForm, customerPhone: e.target.value })}
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Date *</label>
+                <input
+                  type="date"
+                  required
+                  value={bookingForm.bookingDate}
+                  onChange={(e) => setBookingForm({ ...bookingForm, bookingDate: e.target.value })}
+                  min={new Date().toISOString().split('T')[0]}
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Number of Guests *</label>
+                <input
+                  type="number"
+                  required
+                  min="1"
+                  max="20"
+                  value={bookingForm.numberOfGuests}
+                  onChange={(e) => setBookingForm({ ...bookingForm, numberOfGuests: parseInt(e.target.value) })}
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Special Requests</label>
+                <textarea
+                  value={bookingForm.specialRequests}
+                  onChange={(e) => setBookingForm({ ...bookingForm, specialRequests: e.target.value })}
+                  rows={3}
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500"
+                />
+              </div>
+
+              <div className="border-t border-gray-700 pt-4">
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-gray-400">Total:</span>
+                  <span className="text-2xl font-bold text-primary-500">
+                    ${parseInt(selectedTour.price.replace('$', '')) * bookingForm.numberOfGuests}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex space-x-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowBookingModal(false)
+                    setSelectedTour(null)
+                  }}
+                  className="flex-1 bg-gray-800 hover:bg-gray-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="flex-1 bg-primary-500 hover:bg-primary-600 text-black font-semibold py-3 px-4 rounded-lg transition-colors disabled:opacity-50"
+                >
+                  {isSubmitting ? 'Processing...' : 'Confirm Booking'}
+                </button>
+              </div>
+            </form>
+          </motion.div>
+        </div>
+      )}
     </div>
   )
 }
