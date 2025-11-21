@@ -41,7 +41,7 @@ export default function EventsPage() {
     return matchesSearch && matchesCategory
   })
 
-  const uniqueCategories = ['All Categories', ...new Set(events.map(e => e.category))]
+  const uniqueCategories = ['All Categories', ...Array.from(new Set(events.map(e => e.category)))]
   return (
     <div className="min-h-screen bg-black text-white">
       <Header />

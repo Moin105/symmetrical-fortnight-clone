@@ -43,8 +43,8 @@ export default function BarsPage() {
     return matchesSearch && matchesType && matchesLocation
   })
 
-  const uniqueTypes = ['All Types', ...new Set(bars.map(bar => bar.type))]
-  const uniqueLocations = ['All Locations', ...new Set(bars.map(bar => bar.location))]
+  const uniqueTypes = ['All Types', ...Array.from(new Set(bars.map(bar => bar.type)))]
+  const uniqueLocations = ['All Locations', ...Array.from(new Set(bars.map(bar => bar.location)))]
   return (
     <div className="min-h-screen bg-black text-white">
       <Header />

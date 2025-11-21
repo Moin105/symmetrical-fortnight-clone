@@ -35,7 +35,7 @@ export default function BlogPage() {
       try {
         const response = await apiService.getBlogs({ limit: 100 })
         const allBlogs = response.data.data || []
-        const uniqueCategories = ['All', ...new Set(allBlogs.map((blog: Blog) => blog.category))]
+        const uniqueCategories = ['All', ...Array.from(new Set(allBlogs.map((blog: Blog) => blog.category)))]
         setCategories(uniqueCategories)
       } catch (error) {
         console.error('Error fetching categories:', error)

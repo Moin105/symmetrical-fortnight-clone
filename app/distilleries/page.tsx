@@ -43,8 +43,8 @@ export default function DistilleriesPage() {
     return matchesSearch && matchesType && matchesLocation
   })
 
-  const uniqueTypes = ['All Types', ...new Set(distilleries.map(d => d.type))]
-  const uniqueLocations = ['All Locations', ...new Set(distilleries.map(d => d.location))]
+  const uniqueTypes = ['All Types', ...Array.from(new Set(distilleries.map(d => d.type)))]
+  const uniqueLocations = ['All Locations', ...Array.from(new Set(distilleries.map(d => d.location)))]
   return (
     <div className="min-h-screen bg-black text-white">
       <Header />
